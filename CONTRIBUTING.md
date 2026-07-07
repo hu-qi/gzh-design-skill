@@ -6,24 +6,30 @@
 
 - `SKILL.md` — 排版工作流主文档（Agent 入口）
 - `references/` — 6 套主题组件库 + 通用增量库 + 主题索引 + 主题生成器 + 触发用例
-- `scripts/` — 两个校验脚本（见下方「可验证循环」）
+- `scripts/` — 校验与辅助脚本
+- `tests/` — 严格校验器的正反夹具与单元测试
 - `assets/` — 演示输入文章
 - `docs/gallery/` — 主题风格的浏览器预览
 
 ## 可验证循环（改动前后都要跑）
 
-任何改动组件库或 SKILL 后，按这个双关卡闭环自检，两关全绿才提 PR：
+任何改动组件库、SKILL 或校验脚本后，按这个闭环自检；本仓库 CI 会重复执行这些质量门禁：
 
 ```bash
 # 源头关：扫所有组件库的 HTML 块，查大空白 / 正文虚线框 / 平台禁用项
 python3 scripts/component_lint.py .
 
-# 产物关：用改动后的 skill 排版 assets/sample-article.md，再校验产物
-python3 scripts/validate_gzh_html.py <生成的.html>
+# 校验器回归：覆盖合规、leaf 漏包裹、代码区豁免、危险属性和 URL 等夹具
+python3 -m unittest discover -s tests -v
+
+# 产物关：正式交付必须采用严格模式，ERROR 与 WARNING 都不能放行
+python3 scripts/validate_gzh_html.py \
+  --strict --fail-on-warning <生成的.html>
 ```
 
-- `component_lint.py` 须 **0 ERROR**
-- `validate_gzh_html.py` 须 **0 ERROR、半角标点 0 WARN**
+- `component_lint.py` 须 **0 ERROR**。
+- 单元测试须全部通过。
+- `validate_gzh_html.py --strict --fail-on-warning` 须 **0 ERROR、0 WARNING**：部分中文漏 `<span leaf>`、非单一 `<section>` 根节点、危险事件属性或 URL 都会阻断。
 
 细节见 `references/eval-cases.md` 的「维护 · 可验证循环」一节。
 
