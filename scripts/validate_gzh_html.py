@@ -131,13 +131,12 @@ class ComplianceChecker(HTMLParser):
 
         is_leaf = tag == "span" and "leaf" in attr_map
         is_code = tag in {"code", "pre"} or bool(CODE_STYLE.search(style))
-        if is_leaf:
-            self.span_leaf_count += 1
-            self.leaf_depth += 1
-        if is_code:
-            self.code_depth += 1
-
         if tag not in VOID_TAGS:
+            if is_leaf:
+                self.span_leaf_count += 1
+                self.leaf_depth += 1
+            if is_code:
+                self.code_depth += 1
             self.stack.append((tag, is_leaf, is_code))
 
     def _check_url(self, tag, name, value):
@@ -145,8 +144,12 @@ class ComplianceChecker(HTMLParser):
         if not value:
             return
         compact = re.sub(r"[\x00-\x20]+", "", value).lower()
-        parsed = urlparse(compact)
-        scheme = parsed.scheme.lower()
+        try:
+            parsed = urlparse(compact)
+            scheme = parsed.scheme.lower()
+        except ValueError:
+            self.add_error(f"{name} 包含无效的 URL 格式")
+            return
 
         if scheme in DANGEROUS_SCHEMES:
             self.add_error(f"{name} 使用了不安全的 {scheme}: URL")
@@ -160,6 +163,8 @@ class ComplianceChecker(HTMLParser):
 
     def handle_startendtag(self, tag, attrs):
         self.handle_starttag(tag, attrs)
+        if tag.lower() not in VOID_TAGS:
+            self.handle_endtag(tag)
 
     def handle_endtag(self, tag):
         tag = tag.lower()
@@ -223,7 +228,7 @@ def validate(html, name="<input>", strict=False):
     try:
         checker.feed(html)
         checker.close()
-    except Exception as exc:  # HTMLParser 极少抛错，仍将其转成可见 ERROR
+    except Exception as exc:
         checker.add_error(f"HTML 解析失败：{exc}")
     checker.finish(strict=strict)
 
