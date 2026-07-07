@@ -38,6 +38,20 @@ class ValidateGzhHtmlTest(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual(warnings, [])
 
+    def test_void_element_code_style_does_not_disable_following_checks(self):
+        errors, warnings, _ = validate(fixture("void-code-style.html"), strict=True)
+        self.assertTrue(any("未被 <span leaf> 包裹" in item for item in errors))
+        self.assertTrue(any("半角标点" in item for item in warnings))
+
+    def test_self_closing_nonvoid_tag_is_popped_from_stack(self):
+        errors, warnings, _ = validate(fixture("self-closing-span.html"), strict=True)
+        self.assertEqual(errors, [])
+        self.assertEqual(warnings, [])
+
+    def test_malformed_url_becomes_validation_error(self):
+        errors, _, _ = validate(fixture("malformed-url.html"), strict=True)
+        self.assertTrue(any("包含无效的 URL 格式" in item for item in errors))
+
     def test_event_attribute_is_rejected(self):
         errors, _, _ = validate(fixture("event-attribute.html"), strict=True)
         self.assertTrue(any("事件属性 onerror" in item for item in errors))
