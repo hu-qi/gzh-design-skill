@@ -10,7 +10,7 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/code)
-[![Themes](https://img.shields.io/badge/themes-6%20+%20generator-059669)](references/theme-index.md)
+[![Themes](https://img.shields.io/badge/themes-6%20+%20generator-059669)](skills/gzh-design/references/theme-index.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Agents](https://img.shields.io/badge/Claude%20Code%20·%20Codex%20·%20Cursor-supported-8b5cf6.svg)](#-quick-start)
 
@@ -25,7 +25,7 @@ A layout Skill for AI agents (Claude Code / Codex / Cursor …). You write Markd
 ## ✨ Features
 
 - **6 curated themes**: Moyu Green (default) · Red & White · Graphite Minimal · Zen Whitespace · Moyu Ticket · Olive Journal — each a self-contained thick component library (design tokens + dozens of components + visual-hierarchy table + article-type recipe table).
-- **Theme generator**: none fit? Describe a style in one line or drop a reference image, and generate a fresh component library saved for reuse (see `references/theme-generator.md`).
+- **Theme generator**: none fit? Describe a style in one line or drop a reference image, and generate a fresh component library saved for reuse (see `skills/gzh-design/references/theme-generator.md`).
 - **Full content support**: code blocks (dark/light, monospace), images, GIFs (with an animated badge), inline code, quotes, lists, product badges.
 - **Smart layout**: auto section numbering (last chapter ∞ / ///), 1–3 keyword underlines per paragraph, intro card & TOC distilled from the body, de-duplicated signature.
 - **Full-width CJK punctuation** in prose; kept as-is inside code blocks.
@@ -69,7 +69,7 @@ One long-form article laid out in all 6 themes (full-fidelity screenshots with r
 </tr>
 </table>
 
-> 📚 **All 6 themes → [docs/all-themes.md](docs/all-themes.md)**　|　or open `docs/gallery/index.html` for the interactive full HTML.
+> 📚 **All 6 themes → [docs/all-themes.md](skills/gzh-design/docs/all-themes.md)**　|　or open `skills/gzh-design/docs/gallery/index.html` for the interactive full HTML.
 
 ### Theme cheat-sheet
 
@@ -82,7 +82,7 @@ One long-form article laid out in all 6 themes (full-fidelity screenshots with r
 | ![](https://placehold.co/12/059669/059669.png) `#059669` | Moyu Ticket | Tool comparisons, creative reviews (ticket motif) |
 | ![](https://placehold.co/12/1e1f23/1e1f23.png) `#1e1f23` | Olive Journal | Editorial notes, deep reviews, case recaps |
 
-> English slug, library file and underline CSS for each theme: see [`references/theme-index.md`](references/theme-index.md). Need another style? Have the AI generate one with the [theme generator](references/theme-generator.md).
+> English slug, library file and underline CSS for each theme: see [`skills/gzh-design/references/theme-index.md`](skills/gzh-design/references/theme-index.md). Need another style? Have the AI generate one with the [theme generator](skills/gzh-design/references/theme-generator.md).
 
 ## 🚀 Quick Start
 
@@ -91,7 +91,8 @@ One long-form article laid out in all 6 themes (full-fidelity screenshots with r
 npx skills add https://github.com/isjiamu/gzh-design-skill
 
 # Or manual clone
-git clone https://github.com/isjiamu/gzh-design-skill.git ~/.claude/skills/gzh-design
+git clone https://github.com/isjiamu/gzh-design-skill.git gzh-design-skill
+cp -R gzh-design-skill/skills/gzh-design ~/.claude/skills/gzh-design
 ```
 
 Or just ask **any agent** (Claude Code / Codex / Cursor …):
@@ -118,8 +119,8 @@ Output obeys: no `<style>/<script>/<div>`, no `class/id`, no `position:fixed/abs
 ## 🔁 Verifiable loop
 
 ```bash
-python3 scripts/component_lint.py .            # source gate: anti-patterns in libraries
-python3 scripts/validate_gzh_html.py out.html  # output gate: final HTML compliance
+python3 skills/gzh-design/scripts/component_lint.py .            # source gate: anti-patterns in libraries
+python3 skills/gzh-design/scripts/validate_gzh_html.py out.html  # output gate: final HTML compliance
 ```
 
 Source gate flags `white-space:pre` (blank bloat), full-border dashed frames in prose, and forbidden platform items — must be 0 ERROR. Output gate flags forbidden tags, `<span leaf>` wrapping, half-width punctuation — must be 0 ERROR / 0 half-width WARN.
@@ -135,7 +136,7 @@ Source gate flags `white-space:pre` (blank bloat), full-border dashed frames in 
 ## 📁 Structure
 
 ```
-gzh-design/
+skills/gzh-design/
 ├── SKILL.md                 # layout workflow (agent entry)
 ├── references/              # 6 theme libs + generator + shared lib + theme-index + eval-cases
 ├── scripts/                 # validate_gzh_html.py + component_lint.py
@@ -157,11 +158,11 @@ gzh-design/
 
 ### Theme generation — one line or one reference image
 
-Not enough with the built-in 6? Have the AI make one. Driven by the second workflow in [`references/theme-generator.md`](references/theme-generator.md):
+Not enough with the built-in 6? Have the AI make one. Driven by the second workflow in [`skills/gzh-design/references/theme-generator.md`](skills/gzh-design/references/theme-generator.md):
 
 1. **Collect preferences** (asked all at once): theme description required (or a reference image); name / colors / font / radius / shadow / use-case auto-filled if blank.
-2. **Generate a block library**: 45–75 blocks of full inline-style HTML saved to `assets/theme-previews/{id}.html` — review the whole page at once in a browser.
-3. **Convert + register**: turn it into `references/theme-{id}.md` (add `<span leaf>`, the five required sections), register in theme-index, pass `component_lint.py` at 0 ERROR.
+2. **Generate a block library**: 45–75 blocks of full inline-style HTML saved to `skills/gzh-design/assets/theme-previews/{id}.html` — review the whole page at once in a browser.
+3. **Convert + register**: turn it into `skills/gzh-design/references/theme-{id}.md` (add `<span leaf>`, the five required sections), register in theme-index, pass `component_lint.py` at 0 ERROR.
 4. **First-class from then on**: use it exactly like a built-in theme.
 
 > Try: *"Generate a new WeChat theme — mono magazine, Klein-blue accent, serif type"* or *"Build a component library from this reference image."*
@@ -178,13 +179,13 @@ Give just a primary color or a vibe, and the generator derives the whole harmoni
 
 **Will styles survive pasting into WeChat?** Yes — everything is inlined and every text node is `<span leaf="">`-wrapped, enforced by the validator.
 
-**Can I add my own theme?** Two ways: (1) have the AI generate one via `references/theme-generator.md`; (2) hand-write one per `CONTRIBUTING.md` and open a PR.
+**Can I add my own theme?** Two ways: (1) have the AI generate one via `skills/gzh-design/references/theme-generator.md`; (2) hand-write one per `CONTRIBUTING.md` and open a PR.
 
 **Can it output several themes at once?** Yes — say "lay this out in each of these themes" for a batch to choose from.
 
 **How do I update?** Re-run `npx skills add https://github.com/isjiamu/gzh-design-skill`, or `git pull` in the install dir.
 
-**What if the agent's output isn't compliant?** Run `scripts/validate_gzh_html.py`; fix on ERROR until both gates are green. Still stuck? Open an Issue.
+**What if the agent's output isn't compliant?** Run `skills/gzh-design/scripts/validate_gzh_html.py`; fix on ERROR until both gates are green. Still stuck? Open an Issue.
 
 ## 🤝 Contributing · 📄 License
 
