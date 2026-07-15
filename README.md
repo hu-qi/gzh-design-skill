@@ -10,7 +10,7 @@
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://claude.ai/code)
-[![Themes](https://img.shields.io/badge/themes-6%20+%20generator-059669)](references/theme-index.md)
+[![Themes](https://img.shields.io/badge/themes-6%20+%20generator-059669)](skills/gzh-design/references/theme-index.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Agents](https://img.shields.io/badge/Claude%20Code%20·%20Codex%20·%20Cursor-supported-8b5cf6.svg)](#-快速开始)
 
@@ -25,7 +25,7 @@
 ## ✨ 核心特性
 
 - **6 套精选主题**：摸鱼绿（默认）· 红白 · 石墨极简 · 留白禅意 · 摸鱼票据 · 橄榄手记 —— 每套都是自成体系的厚组件库（设计变量 + 数十个精细组件 + 视觉层级表 + 文章类型配方表）。
-- **主题生成器**：不满足现成主题？用一句话描述或一张参考图，生成一套全新组件库并保存本地复用（见 `references/theme-generator.md`）。
+- **主题生成器**：不满足现成主题？用一句话描述或一张参考图，生成一套全新组件库并保存本地复用（见 `skills/gzh-design/references/theme-generator.md`）。
 - **内容全兼容**：代码块（深/浅色，等宽不折行）、图片、GIF（带动图角标）、行内代码、引用、列表、产品徽章。
 - **智能排版**：章节自动编号（末章 ∞ / ///）、每段主动标 1–3 个关键词下划线、从正文提炼引言卡与目录、作者签名去重合并。
 - **中文全角标点**：正文自动规范全角，代码块内原样保留。
@@ -54,7 +54,7 @@
 </tr>
 </table>
 
-> 📚 **6 套完整长图 → [docs/all-themes.md](docs/all-themes.md)**　｜　克隆后浏览器打开 `docs/gallery/index.html` 可看可交互的完整 HTML。
+> 📚 **6 套完整长图 → [docs/all-themes.md](skills/gzh-design/docs/all-themes.md)**　｜　克隆后浏览器打开 `skills/gzh-design/docs/gallery/index.html` 可看可交互的完整 HTML。
 
 ## ✅ 适合 / ❌ 不适合
 
@@ -109,7 +109,8 @@ npx skills add https://github.com/isjiamu/gzh-design-skill
 ### 方式三：手动 clone
 
 ```bash
-git clone https://github.com/isjiamu/gzh-design-skill.git ~/.claude/skills/gzh-design
+git clone https://github.com/isjiamu/gzh-design-skill.git gzh-design-skill
+cp -R gzh-design-skill/skills/gzh-design ~/.claude/skills/gzh-design
 ```
 
 装好后，直接对 Agent 说：
@@ -134,13 +135,13 @@ git clone https://github.com/isjiamu/gzh-design-skill.git ~/.claude/skills/gzh-d
 改组件库或工作流后，用双关卡闭环防回归：
 
 ```bash
-python3 scripts/component_lint.py .            # 源头关：扫组件库反模式
-python3 scripts/validate_gzh_html.py out.html  # 产物关：扫最终 HTML 合规
+python3 skills/gzh-design/scripts/component_lint.py .            # 源头关：扫组件库反模式
+python3 skills/gzh-design/scripts/validate_gzh_html.py out.html  # 产物关：扫最终 HTML 合规
 ```
 
 - **源头关** 查 `white-space:pre`（大空白）、正文四周虚线框、平台禁用项 —— 须 0 ERROR。
 - **产物关** 查禁用标签、`<span leaf>` 包裹、半角标点 —— 须 0 ERROR / 半角 0 WARN。
-- 逻辑：源头干净 → 产物必然干净。详见 `references/eval-cases.md`。
+- 逻辑：源头干净 → 产物必然干净。详见 `skills/gzh-design/references/eval-cases.md`。
 
 ## 💡 为什么这么设计
 
@@ -153,7 +154,7 @@ python3 scripts/validate_gzh_html.py out.html  # 产物关：扫最终 HTML 合�
 ## 📁 目录结构
 
 ```
-gzh-design/
+skills/gzh-design/
 ├── SKILL.md                    # 排版工作流主文档（Agent 入口）
 ├── references/
 │   ├── theme-index.md          # 6 套主题索引（主色/适用/下划线，单一来源）
@@ -185,11 +186,11 @@ gzh-design/
 
 ### 主题生成：一句话 / 一张参考图，现造一套新主题
 
-内置 6 套不够用时不必等更新——让 AI 现造一套。背后是 [`references/theme-generator.md`](references/theme-generator.md) 定义的第二条工作流：
+内置 6 套不够用时不必等更新——让 AI 现造一套。背后是 [`skills/gzh-design/references/theme-generator.md`](skills/gzh-design/references/theme-generator.md) 定义的第二条工作流：
 
 1. **收集偏好**（一次问全，不逐条追问）：主题描述必填（或给参考图），名称 / 主色 / 背景 / 正文色 / 强调色 / 装饰色 / 字体 / 圆角 / 阴影 / 适用场景可留空自动补全。
-2. **生成区块库**：AI 产出 45~75 个区块的完整 HTML 组件库，存到 `assets/theme-previews/{id}.html`，浏览器整页一次浏览确认风格（不逐块问）。
-3. **转标准主题库 + 登记**：确认后转成 `references/theme-{id}.md`（补 `<span leaf>`、补齐五章节：变量表 / 组件 / 骨架 / 配方表 / 映射表），登记进 theme-index，跑 `component_lint.py` 到 0 ERROR。
+2. **生成区块库**：AI 产出 45~75 个区块的完整 HTML 组件库，存到 `skills/gzh-design/assets/theme-previews/{id}.html`，浏览器整页一次浏览确认风格（不逐块问）。
+3. **转标准主题库 + 登记**：确认后转成 `skills/gzh-design/references/theme-{id}.md`（补 `<span leaf>`、补齐五章节：变量表 / 组件 / 骨架 / 配方表 / 映射表），登记进 theme-index，跑 `component_lint.py` 到 0 ERROR。
 4. **即刻同权**：之后排版和内置主题完全一样，直接说「用 XX 主题排这篇」。
 
 **怎么触发**：
@@ -198,7 +199,7 @@ gzh-design/
 >
 > 按这张参考图（附图）做一套公众号排版组件库
 
-仓库里 `assets/theme-previews/theme-mono-blue-editorial.html` 就是这样生成的一套「墨蓝刊读风」样例。
+仓库里 `skills/gzh-design/assets/theme-previews/theme-mono-blue-editorial.html` 就是这样生成的一套「墨蓝刊读风」样例。
 
 ### 颜色搭配：一套可复制的配色结构，AI 自动生成协调色板
 
@@ -232,7 +233,7 @@ gzh-design/
 A：不会。所有样式内联、文字 `<span leaf="">` 包裹，这正是校验脚本强制的重点。
 
 **Q：能自己加主题吗？**
-A：两种方式。① **让 AI 生成**：说「按这个风格 / 这张图生成一套公众号主题」，它会走 `references/theme-generator.md` 的流程生成组件库、登记并复用。② **手写贡献**：照 `CONTRIBUTING.md` 的「新增一套主题风格」，跑通可验证循环即可提 PR。
+A：两种方式。① **让 AI 生成**：说「按这个风格 / 这张图生成一套公众号主题」，它会走 `skills/gzh-design/references/theme-generator.md` 的流程生成组件库、登记并复用。② **手写贡献**：照 `CONTRIBUTING.md` 的「新增一套主题风格」，跑通可验证循环即可提 PR。
 
 **Q：只能在 Claude Code 用吗？**
 A：不限。任何能读取 Skill 目录的 Agent（Codex / Cursor 等）都能用，工作流在 `SKILL.md`。
@@ -247,7 +248,7 @@ A：能。说「用这几套主题各排一遍这篇」即可批量生成多套�
 A：重新跑 `npx skills add https://github.com/isjiamu/gzh-design-skill`，或到安装目录 `git pull`。
 
 **Q：Agent 写出来不合规怎么办？**
-A：跑 `scripts/validate_gzh_html.py`，报 ERROR 就回到装配步骤修；两关全绿才交付，仍有问题欢迎开 Issue。
+A：跑 `skills/gzh-design/scripts/validate_gzh_html.py`，报 ERROR 就回到装配步骤修；两关全绿才交付，仍有问题欢迎开 Issue。
 
 ## 📋 完整主题速查表
 
@@ -260,7 +261,7 @@ A：跑 `scripts/validate_gzh_html.py`，报 ERROR 就回到装配步骤修；�
 | ![](https://placehold.co/12/059669/059669.png) `#059669` | 摸鱼票据风 | 工具对比、创意评测（票据视觉隐喻） |
 | ![](https://placehold.co/12/1e1f23/1e1f23.png) `#1e1f23` | 橄榄手记 | 内刊手记、深度评测、案例复盘 |
 
-> 每套主题的英文标识、组件库文件、下划线 CSS 见 [`references/theme-index.md`](references/theme-index.md)。
+> 每套主题的英文标识、组件库文件、下划线 CSS 见 [`skills/gzh-design/references/theme-index.md`](skills/gzh-design/references/theme-index.md)。
 > 需要别的风格？让 AI 用 [主题生成器](#-faq) 现生成一套。
 
 ## 🤝 贡献
